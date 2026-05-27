@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DISSOLVING — Void Passenger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #04020a;
+    --purple: #0a0618;
+    --gold: #c4a05a;
+    --gold-bright: #d4b870;
+    --text: #e0d0b0;
+    --text-dim: rgba(224, 208, 176, 0.62);
+    --halo: rgba(100, 20, 180, 0.55);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  body {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* ---- Cosmic backdrop layer ---- */
+  #cosmos {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .planet {
+    position: fixed;
+    z-index: 1;
+    pointer-events: none;
+    will-change: transform;
+    filter: drop-shadow(0 0 40px rgba(100, 20, 180, 0.12)) brightness(0.45) contrast(0.95);
+    opacity: 0.55;
+  }
+  .planet img { display: block; width: 100%; height: 100%; }
+
+  .meteor-static {
+    position: fixed;
+    z-index: 3;
+    pointer-events: none;
+    left: -180px;
+    bottom: -220px;
+    width: 620px;
+    opacity: 1;
+    filter: brightness(0.32) contrast(1.05) drop-shadow(0 0 20px rgba(100, 20, 180, 0.18));
+    animation: meteorSpin 360s linear infinite;
+    transform-origin: 50% 50%;
+  }
+  .meteor-static img { width: 100%; display: block; }
+  @keyframes meteorSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* page content sits above cosmos */
+  main, header.nav, footer { position: relative; z-index: 5; }
+
+  /* ---- Top nav (lang toggle) ---- */
+  header.nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 22px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+  }
+  header.nav .mark {
+    font-family: "Cinzel", serif;
+    font-size: 11px;
+    letter-spacing: 0.42em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    pointer-events: auto;
+  }
+  header.nav .right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    pointer-events: auto;
+  }
+  .nav-follow {
+    width: 200px;
+    height: 38px;
+    background: rgba(10, 6, 24, 0.55);
+    border: 1px solid rgba(196, 160, 90, 0.25);
+    border-radius: 999px;
+    padding: 2px 6px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .nav-follow iframe {
+    border: 0;
+    width: 100%;
+    height: 50px;
+    margin-top: -6px;
+    color-scheme: dark;
+    /* Bandcamp ships the button on a white background — invert it so it sits on the dark nav */
+    filter: invert(0.92) hue-rotate(180deg) contrast(0.95);
+    mix-blend-mode: screen;
+  }
+  .lang-toggle {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    font-family: "Cinzel", serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    background: rgba(10, 6, 24, 0.55);
+    border: 1px solid rgba(196, 160, 90, 0.25);
+    border-radius: 999px;
+    padding: 4px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .lang-toggle button {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text-dim);
+    padding: 6px 14px;
+    cursor: pointer;
+    font: inherit;
+    border-radius: 999px;
+    transition: color .3s ease, background .3s ease;
+  }
+  .lang-toggle button.active {
+    color: var(--bg);
+    background: var(--gold);
+  }
+  .lang-toggle button:hover:not(.active) { color: var(--gold-bright); }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 140px 24px 80px;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url("https://f4.bcbits.com/img/0045140787_20.jpg");
+    background-size: cover;
+    background-position: center;
+    opacity: 0.22;
+    z-index: 0;
+  }
+  .hero-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, var(--bg) 88%);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 920px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .title-img {
+    width: min(82vw, 760px);
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 0 40px rgba(100, 20, 180, 0.45)) drop-shadow(0 0 14px rgba(196,160,90,0.18));
+    animation: titleFloat 9s ease-in-out infinite;
+  }
+  @keyframes titleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .hero-tagline {
+    margin-top: 4px;
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-size: clamp(18px, 2.1vw, 24px);
+    letter-spacing: 0.12em;
+    color: var(--text);
+    opacity: 0.85;
+  }
+
+  .hero-date {
+    margin-top: 22px;
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .hero-date::before, .hero-date::after {
+    content: "·";
+    margin: 0 14px;
+    color: var(--gold);
+    opacity: 0.5;
+  }
+
+  .hero-ctas {
+    margin-top: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-primary {
+    display: inline-block;
+    padding: 16px 38px;
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    text-decoration: none;
+    border: 1px solid var(--gold-bright);
+    border-radius: 1px;
+    transition: all .35s ease;
+    box-shadow: 0 0 30px rgba(196, 160, 90, 0.18);
+  }
+  .btn-primary:hover {
+    background: var(--gold-bright);
+    box-shadow: 0 0 50px rgba(196, 160, 90, 0.45), 0 0 90px rgba(100, 20, 180, 0.25);
+    transform: translateY(-1px);
+  }
+  .btn-link {
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    padding: 16px 4px;
+    border-bottom: 1px solid rgba(224,208,176,0.25);
+    transition: color .3s, border-color .3s;
+  }
+  .btn-link:hover { color: var(--gold-bright); border-color: var(--gold); }
+
+  /* ---- Section common ---- */
+  section {
+    position: relative;
+    padding: 130px 24px;
+  }
+  section.covers { padding-top: 50px; padding-bottom: 60px; }
+  section.songs-section { padding-top: 60px; }
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .container-wide {
+    max-width: 1180px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .section-head {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+  .section-head h2 {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-size: clamp(28px, 3.6vw, 44px);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .deco-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 22px;
+  }
+  .deco-line .line {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .deco-line .dot {
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  /* ---- Intro ---- */
+  .intro-body {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 300;
+    font-size: clamp(17px, 1.5vw, 21px);
+    line-height: 2;
+    color: var(--text);
+    text-align: left;
+    column-gap: 56px;
+    max-width: 760px;
+    margin: 0 auto;
+    text-wrap: pretty;
+  }
+  .intro-body p { margin-bottom: 22px; opacity: 0.92; }
+  .intro-body em { color: var(--gold-bright); font-style: italic; }
+
+  /* ---- Covers grid ---- */
+  .covers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    margin-bottom: 60px;
+  }
+  .cover-card {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 2px;
+    overflow: visible;
+    box-shadow: 0 0 40px 15px rgba(100, 20, 180, 0.55);
+    transition: box-shadow .8s ease, transform .8s ease;
+  }
+  .cover-card:hover {
+    box-shadow: 0 0 60px 22px rgba(120, 30, 200, 0.7);
+    transform: translateY(-3px);
+  }
+  .cover-card img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 2px;
+  }
+  .cover-label {
+    margin-top: 22px;
+    text-align: center;
+    font-family: "Cinzel", serif;
+    font-size: 10px;
+    letter-spacing: 0.5em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .follow-wrap {
+    max-width: 360px;
+    margin: 30px auto 0;
+    background: rgba(10,6,24,0.4);
+    padding: 6px 10px;
+    border: 1px solid rgba(196,160,90,0.15);
+    border-radius: 2px;
+  }
+
+  /* ---- Songs ---- */
+  .songs {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .song {
+    position: relative;
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 36px;
+    padding: 50px 0;
+    border-top: 1px solid rgba(196, 160, 90, 0.12);
+    align-items: start;
+  }
+  .song:last-child { border-bottom: 1px solid rgba(196, 160, 90, 0.12); }
+
+  .song-side {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    align-self: start;
+    overflow: visible;
+  }
+  .song-side canvas {
+    position: absolute;
+    inset: -20px;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    pointer-events: none;
+  }
+  .song-num {
+    position: relative;
+    z-index: 2;
+    font-family: "Cinzel", serif;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    padding-top: 6px;
+    text-shadow: 0 0 18px rgba(196, 160, 90, 0.35);
+    transition: color .3s, text-shadow .3s, letter-spacing .3s;
+  }
+  .song:hover .song-num {
+    color: var(--gold-bright);
+    text-shadow: 0 0 30px rgba(212, 184, 112, 0.7);
+    letter-spacing: 0.6em;
+  }
+
+  .song-content h3 {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-size: clamp(20px, 2vw, 26px);
+    letter-spacing: 0.18em;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    transition: color .3s;
+  }
+  .song:hover .song-content h3 { color: var(--gold-bright); }
+
+  .song-content p {
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(16px, 1.35vw, 19px);
+    line-height: 1.95;
+    color: var(--text);
+    opacity: 0.88;
+    text-wrap: pretty;
+  }
+  .song-closing {
+    display: block;
+    margin-top: 22px;
+    font-style: italic;
+    color: var(--gold);
+    opacity: 0.85;
+    font-size: 0.95em;
+  }
+
+  /* ---- Final note ---- */
+  .final-note {
+    padding: 130px 24px 160px;
+  }
+  .final-note .container {
+    max-width: 760px;
+    text-align: left;
+  }
+  .final-note .deco-line { margin: 32px auto 50px; }
+  .final-note p {
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(17px, 1.5vw, 21px);
+    line-height: 2;
+    color: var(--text);
+    text-wrap: pretty;
+    margin-bottom: 22px;
+  }
+  .final-note .signoff {
+    display: block;
+    margin-top: 36px;
+    text-align: center;
+    font-style: italic;
+    color: var(--gold-bright);
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- Footer ---- */
+  footer {
+    padding: 60px 24px 80px;
+    text-align: center;
+    border-top: 1px solid rgba(196, 160, 90, 0.1);
+    font-family: "Cinzel", serif;
+    font-size: 10px;
+    letter-spacing: 0.5em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  footer .sep { color: var(--gold); margin: 0 12px; opacity: 0.7; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 760px) {
+    header.nav { padding: 16px 14px; }
+    header.nav .mark { font-size: 10px; letter-spacing: 0.32em; }
+    .nav-follow { width: 150px; height: 34px; }
+    .nav-follow iframe { margin-top: -8px; }
+    .covers-grid { grid-template-columns: 1fr; gap: 40px; }
+    .song { grid-template-columns: 70px 1fr; gap: 18px; padding: 38px 0; }
+    .song-side { width: 70px; height: 70px; }
+    .meteor-static { width: 380px; left: -140px; bottom: -160px; }
+    section { padding: 90px 20px; }
+    .hero { padding: 130px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="cosmos"></canvas>
+
+<!-- Drifting planets (kept outside main flow, fixed) -->
+<div class="planet" id="planet-1" style="width: 170px; height: 170px; top: 16%;">
+  <img src="https://i.postimg.cc/DydqmHTs/planeta.png" alt="" />
+</div>
+<div class="planet" id="planet-2" style="width: 220px; height: 220px; top: 42%;">
+  <img src="https://i.postimg.cc/KvZdKXT8/planeta-2.png" alt="" />
+</div>
+
+<!-- Static meteorite, bottom-left, partial offscreen -->
+<div class="meteor-static" aria-hidden="true">
+  <img src="https://i.postimg.cc/sfprQ90Y/rocas.png" alt="" />
+</div>
+
+<header class="nav">
+  <div class="mark">Void Passenger</div>
+  <div class="lang-toggle" role="tablist" aria-label="Language">
+    <button data-lang="es" class="active" aria-label="Español">ES</button>
+    <button data-lang="en" aria-label="English">EN</button>
+  </div>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <img class="title-img" src="https://i.postimg.cc/Dwsv6kxB/DISSOLVING.png" alt="DISSOLVING" />
+    <div class="hero-tagline" data-i18n="tagline">Cinco transmisiones desde el vacío</div>
+    <div class="hero-date" data-i18n="date">9 de junio de 2026</div>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="https://distrokid.com/hyperfollow/voidpassenger1/dissolving" target="_blank" rel="noopener" data-i18n="cta_presave">Pre-guardar en Spotify</a>
+      <a class="btn-link" href="https://thevoidpassenger.bandcamp.com/album/dissolving" target="_blank" rel="noopener" data-i18n="cta_bandcamp">Escuchar en Bandcamp</a>
+    </div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="intro">
+  <div class="container">
+    <div class="section-head">
+      <h2 data-i18n="intro_title">Comienza tu viaje</h2>
+      <div class="deco-line"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+    </div>
+    <div class="intro-body" data-i18n-html="intro_body">
+      <p>Prepárate. No para algo que te va a ocurrir — sino para algo que ya está ocurriendo. Que siempre ha estado ocurriendo.</p>
+      <p>Cierra los ojos y déjate flotar. No hay suelo bajo tus pies. No hay paredes a tu alrededor. Solo inmensidad — infinita, indiferente y extrañamente familiar.</p>
+      <p>Eres una partícula de polvo en movimiento perpetuo, y de alguna manera eso no da miedo. Es lo más honesto que has sentido en mucho tiempo.</p>
+      <p>Los sentimientos que creías que te definían empiezan a perder sus bordes. El ruido se aquieta. El peso se levanta. Y en ese silencio algo extraordinario ocurre — dejas de ser tú en la forma en que siempre te entendiste, y por primera vez simplemente <em>eres</em>.</p>
+      <p>Las respuestas nunca estuvieron ahí fuera. Siempre estuvieron aquí. En la quietud bajo el ruido. En la voz que pasaste toda tu vida aprendiendo a silenciar.</p>
+      <p>Esto es <em>DISSOLVING</em>. Cinco canciones. Un viaje. Un recordatorio de que siempre fuiste más grande que todo lo que estabas cargando.</p>
+      <p>Suéltate. Ya sabes cómo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COVERS -->
+<section class="covers">
+  <div class="container">
+    <div class="covers-grid">
+      <div>
+        <div class="cover-card">
+          <img src="https://f4.bcbits.com/img/a407315733_1x1_700.avif" alt="DISSOLVING — Portada" />
+        </div>
+        <div class="cover-label" data-i18n="cover_front">Portada</div>
+      </div>
+      <div>
+        <div class="cover-card">
+          <img src="https://i.postimg.cc/qRLBVsnM/CONTRAPORTADA-DISSOLVING.jpg" alt="DISSOLVING — Contraportada" />
+        </div>
+        <div class="cover-label" data-i18n="cover_back">Contraportada</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SONGS -->
+<section class="songs-section">
+  <div class="container">
+    <div class="section-head">
+      <h2 data-i18n="songs_title">Las canciones</h2>
+      <div class="deco-line"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+    </div>
+    <div class="songs" id="songs"></div>
+  </div>
+</section>
+
+<!-- FINAL NOTE -->
+<section class="final-note">
+  <div class="container">
+    <div class="section-head">
+      <h2 data-i18n="final_title">Nota final</h2>
+      <div class="deco-line"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+    </div>
+    <div data-i18n-html="final_body">
+      <p>Esta es la historia de Void Passenger. Un viaje inventado, fantástico, espiritual. Y al mismo tiempo es tu historia. Y la mía.</p>
+      <p>Todos hemos flotado en ese vacío alguna vez — sin saber cómo llegamos, sin recordar bien quiénes éramos antes, sintiendo cómo los hilos que nos ataban a algo se iban soltando uno por uno. Todos hemos chocado contra fragmentos que nos han ido dejando diferente por el camino. Todos hemos sentido esa tensión justo antes del cambio.</p>
+      <p>Y todos, en algún momento, hemos escuchado esa voz. La que viene de adentro. Profunda, quieta, indestructible. La que siempre sabe. La que nunca miente. La que callamos, ignoramos y silenciamos porque escucharla requiere valentía — porque lo que dice a veces exige más de nosotros que seguir peleando contra lo inevitable.</p>
+      <p>Soltar no es perder. Soltar es la decisión más difícil y más valiente que existe. Es elegir conscientemente dejar de gastar energía en sostener lo que ya no puede sostenerse, para convertirte en algo que todavía no sabes que puedes ser.</p>
+      <p>Lo que viene después no es mejor ni peor. Es diferente. Eres diferente. Y eso, dependiendo de cómo lo mires, puede ser la victoria más grande de tu vida.</p>
+      <span class="signoff">— Escucha esa voz. Siempre lo supiste. Y siempre fuiste más fuerte de lo que creías. El viaje continúa.</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>Void Passenger</span><span class="sep">·</span><span>DISSOLVING</span><span class="sep">·</span><span>Orothland Records</span><span class="sep">·</span><span>2026</span>
+</footer>
+
+<script>
+/* =================== i18n =================== */
+const I18N = {
+  es: {
+    tagline: "Cinco transmisiones desde el vacío",
+    date: "9 de junio de 2026",
+    cta_presave: "Pre-guardar en Spotify",
+    cta_bandcamp: "Escuchar en Bandcamp",
+    intro_title: "Comienza tu viaje",
+    intro_body: `
+      <p>Prepárate. No para algo que te va a ocurrir — sino para algo que ya está ocurriendo. Que siempre ha estado ocurriendo.</p>
+      <p>Cierra los ojos y déjate flotar. No hay suelo bajo tus pies. No hay paredes a tu alrededor. Solo inmensidad — infinita, indiferente y extrañamente familiar.</p>
+      <p>Eres una partícula de polvo en movimiento perpetuo, y de alguna manera eso no da miedo. Es lo más honesto que has sentido en mucho tiempo.</p>
+      <p>Los sentimientos que creías que te definían empiezan a perder sus bordes. El ruido se aquieta. El peso se levanta. Y en ese silencio algo extraordinario ocurre — dejas de ser tú en la forma en que siempre te entendiste, y por primera vez simplemente <em>eres</em>.</p>
+      <p>Las respuestas nunca estuvieron ahí fuera. Siempre estuvieron aquí. En la quietud bajo el ruido. En la voz que pasaste toda tu vida aprendiendo a silenciar.</p>
+      <p>Esto es <em>DISSOLVING</em>. Cinco canciones. Un viaje. Un recordatorio de que siempre fuiste más grande que todo lo que estabas cargando.</p>
+      <p>Suéltate. Ya sabes cómo.</p>
+    `,
+    covers_title: "El objeto",
+    cover_front: "Portada",
+    cover_back: "Contraportada",
+    songs_title: "Las canciones",
+    final_title: "Nota final",
+    final_body: `
+      <p>Esta es la historia de Void Passenger. Un viaje inventado, fantástico, espiritual. Y al mismo tiempo es tu historia. Y la mía.</p>
+      <p>Todos hemos flotado en ese vacío alguna vez — sin saber cómo llegamos, sin recordar bien quiénes éramos antes, sintiendo cómo los hilos que nos ataban a algo se iban soltando uno por uno. Todos hemos chocado contra fragmentos que nos han ido dejando diferente por el camino. Todos hemos sentido esa tensión justo antes del cambio.</p>
+      <p>Y todos, en algún momento, hemos escuchado esa voz. La que viene de adentro. Profunda, quieta, indestructible. La que siempre sabe. La que nunca miente. La que callamos, ignoramos y silenciamos porque escucharla requiere valentía — porque lo que dice a veces exige más de nosotros que seguir peleando contra lo inevitable.</p>
+      <p>Soltar no es perder. Soltar es la decisión más difícil y más valiente que existe. Es elegir conscientemente dejar de gastar energía en sostener lo que ya no puede sostenerse, para convertirte en algo que todavía no sabes que puedes ser.</p>
+      <p>Lo que viene después no es mejor ni peor. Es diferente. Eres diferente. Y eso, dependiendo de cómo lo mires, puede ser la victoria más grande de tu vida.</p>
+      <span class="signoff">— Escucha esa voz. Siempre lo supiste. Y siempre fuiste más fuerte de lo que creías. El viaje continúa.</span>
+    `
+  },
+  en: {
+    tagline: "Five transmissions from the void",
+    date: "June 9, 2026",
+    cta_presave: "Pre-save on Spotify",
+    cta_bandcamp: "Listen on Bandcamp",
+    intro_title: "Begin your journey",
+    intro_body: `
+      <p>Prepare yourself. Not for something that will happen to you — for something that is already happening. Has always been happening.</p>
+      <p>Close your eyes and let yourself float. There is no ground beneath you. No walls around you. Only vastness — infinite, indifferent, and strangely familiar.</p>
+      <p>You are a particle of dust in perpetual motion, and somehow that is not terrifying. It is the most honest thing you have ever felt.</p>
+      <p>The feelings you thought defined you begin to lose their edges. The noise quiets. The weight lifts. And in that silence something extraordinary happens — you stop being you in the way you always understood yourself to be, and for the first time you simply <em>are</em>.</p>
+      <p>The answers were never out there. They were always here. In the stillness beneath the static. In the voice you spent your whole life learning to silence.</p>
+      <p>This is <em>DISSOLVING</em>. Five tracks. One journey. A reminder that you were always greater than everything you were carrying.</p>
+      <p>Let go. You already know how.</p>
+    `,
+    covers_title: "The artifact",
+    cover_front: "Front cover",
+    cover_back: "Back cover",
+    songs_title: "The songs",
+    final_title: "Final note",
+    final_body: `
+      <p>This is the story of Void Passenger. An invented journey, fantastical, spiritual. And at the same time it is your story. And mine.</p>
+      <p>We have all floated in that void at some point — not knowing how we got there, not quite remembering who we were before, feeling the threads that tied us to something give way one by one. We have all collided with fragments that left us different along the way. We have all felt that tension just before the change.</p>
+      <p>And all of us, at some point, have heard that voice. The one that comes from within. Deep, quiet, indestructible. The one that always knows. The one that never lies. The one we silence, ignore and suppress because listening to it takes courage — because what it says sometimes demands more of us than continuing to fight the inevitable.</p>
+      <p>Letting go is not losing. Letting go is the most difficult and most courageous decision that exists. It is consciously choosing to stop spending energy holding up what can no longer be held, in order to become something you do not yet know you can be.</p>
+      <p>What comes after is not better or worse. It is different. You are different. And that, depending on how you look at it, may be the greatest victory of your life.</p>
+      <span class="signoff">— Listen to that voice. You always knew. And you were always stronger than you believed. The journey continues.</span>
+    `
+  }
+};
+
+const SONGS = [
+  {
+    id: 1, num: "I",
+    title_es: "Child of the Void", title_en: "Child of the Void",
+    body_es: `<p>No hay un antes. Solo esto. Un cuerpo flotando en la inmensidad sin nombre, sin dirección, sin memoria que aguante el peso de ser recordada.</p>
+              <p>Hay imágenes que intentan formarse — fragmentos de algo que quizás fue real — pero se deshacen antes de poder ser tocadas. Lo que queda no son recuerdos. Son sombras de recuerdos.</p>
+              <p>Void Passenger no sabe cómo llegó aquí. No sabe si hubo un aquí antes de este momento. Solo sabe que algo debería importarle, que hay un rastro de urgencia en algún lugar dentro de él — algo que debería hacer, algo que debería querer — pero ya no puede alcanzarlo.</p>
+              <p>El vacío no es frío. No es hostil. Es simplemente inmenso. Y en esa inmensidad, todo lo que alguna vez definió quién era se va diluyendo sin dolor, sin ruido. Solo silencio. Solo deriva. Solo esto.</p>
+              <span class="song-closing">— El principio del fin de todo lo que fue.</span>`,
+    body_en: `<p>There is no before. Only this. A body floating in nameless immensity, with no direction, no memory strong enough to bear the weight of being remembered.</p>
+              <p>Images try to form — fragments of something that may have been real — but they dissolve before they can be touched. What remains are not memories. They are shadows of memories.</p>
+              <p>Void Passenger does not know how he got here. He does not know if there was a here before this moment. He only knows that something should matter to him, that there is a trace of urgency somewhere inside — something he should do, something he should want — but he can no longer reach it.</p>
+              <p>The void is not cold. It is not hostile. It is simply vast. And in that vastness, everything that once defined who he was dissolves without pain, without sound. Only silence. Only drift. Only this.</p>
+              <span class="song-closing">— The beginning of the end of everything he was.</span>`
+  },
+  {
+    id: 2, num: "II",
+    title_es: "Echoes Beyond the Static", title_en: "Echoes Beyond the Static",
+    body_es: `<p>Algo se mueve. Él se mueve. Sin dirección, sin destino, pero ya no quieto.</p>
+              <p>Void Passenger deriva a través de la inmensidad y en ocasiones la luz de algo lejano lo roza — una estrella, un destello — y por un instante algo dentro de él reconoce esa luz. Luego la oscuridad vuelve, y con ella el olvido.</p>
+              <p>Los hilos se están rompiendo. Eran finos desde el principio, casi invisibles, pero eran lo único que lo ataba a algún lugar, a algún nombre, a alguna voz. Ahora los siente ceder uno a uno, sin violencia, sin drama. Solo el silencio de algo que se suelta.</p>
+              <p>Cree escuchar algo. Una llamada. Un eco de alguien que quizás lo busca, o quizás lo buscó, o quizás nunca existió. Contesta hacia adentro pero no hay respuesta. La señal se pierde antes de llegar.</p>
+              <p>No está solo. Está completamente solo. Las dos cosas son verdad al mismo tiempo y ninguna de las dos le da consuelo.</p>
+              <p>Se está perdiendo. No de golpe. Despacio. Inevitablemente.</p>
+              <span class="song-closing">— El eco sigue viajando aunque ya nadie lo emita.</span>`,
+    body_en: `<p>Something moves. He moves. Without direction, without destination, but no longer still.</p>
+              <p>Void Passenger drifts through the vastness and sometimes the light of something distant grazes him — a star, a flash — and for an instant something inside him recognizes that light. Then the darkness returns, and with it, the forgetting.</p>
+              <p>The threads are breaking. They were thin from the start, almost invisible, but they were the only thing tying him to a place, a name, a voice. Now he feels them give way one by one, without violence, without drama. Only the silence of something letting go.</p>
+              <p>He thinks he hears something. A call. An echo from someone who perhaps searches for him, or perhaps searched, or perhaps never existed. He answers inward but there is no reply. The signal is lost before it arrives.</p>
+              <p>He is not alone. He is completely alone. Both things are true at the same time and neither brings any comfort.</p>
+              <p>He is losing himself. Not all at once. Slowly. Inevitably.</p>
+              <span class="song-closing">— The echo keeps traveling even though no one emits it anymore.</span>`
+  },
+  {
+    id: 3, num: "III",
+    title_es: "Transmission Collapse", title_en: "Transmission Collapse",
+    body_es: `<p>Ya no hay señal. Y sin embargo, por primera vez, hay claridad.</p>
+              <p>Void Passenger ha dejado de buscar lo que se perdió. No porque haya encontrado paz, sino porque en el silencio absoluto algo más antiguo ha comenzado a hablar. Una voz que no tiene nombre, que no necesita uno. La voz de lo que queda cuando todo lo demás se ha ido.</p>
+              <p>Sabe lo que está ocurriendo. Siempre lo supo. Hay algo extrañamente familiar en este vacío, como si este no fuera su primer viaje sino el que siempre ha estado haciendo. No recuerda haber estado aquí antes, pero su cuerpo sí. Algo en él reconoce la inmensidad como si fuera casa.</p>
+              <p>Los recuerdos han caído. El nombre ha caído. Los hilos que lo ataban a otro lugar se han soltado del todo. Y en ese colapso total no hay dolor. No hay pérdida. Solo una presencia extraña y quieta que empieza a sentirse como la más honesta que ha conocido.</p>
+              <p>No está solo. Está consigo mismo. Por primera vez, completamente.</p>
+              <p>Y desde algún lugar muy profundo, algo lo llama.</p>
+              <span class="song-closing">— La transmisión no se ha perdido. Ha cambiado de frecuencia.</span>`,
+    body_en: `<p>There is no signal. And yet, for the first time, there is clarity.</p>
+              <p>Void Passenger has stopped searching for what was lost. Not because he has found peace, but because in absolute silence something older has begun to speak. A voice with no name, that needs none. The voice of what remains when everything else is gone.</p>
+              <p>He knows what is happening. He always knew. There is something strangely familiar in this void, as if this were not his first journey but the one he has always been making. He does not remember being here before, but his body does. Something in him recognizes the vastness as if it were home.</p>
+              <p>The memories have fallen. The name has fallen. The threads that bound him to another place have let go entirely. And in that total collapse there is no pain. No loss. Only a strange and quiet presence that begins to feel like the most honest thing he has ever known.</p>
+              <p>He is not alone. He is with himself. For the first time, completely.</p>
+              <p>And from somewhere very deep, something calls to him.</p>
+              <span class="song-closing">— The transmission has not been lost. It has changed frequency.</span>`
+  },
+  {
+    id: 4, num: "IV",
+    title_es: "Falling Through Fragments", title_en: "Falling Through Fragments",
+    body_es: `<p>El vacío tiene obstáculos. Void Passenger los encuentra sin buscarlo — masas de roca que flotan sin propósito, fragmentos de algo que quizás fue un mundo. Los roza. Los atraviesa. Algunos impactan y él espera el dolor, pero el dolor no llega. Solo una sensación extraña, como si algo de él se quedara adherido a cada piedra que pasa.</p>
+              <p>No es destrucción. Es dispersión.</p>
+              <p>Está dejando de ser materia y no lo vive como pérdida sino como proceso. Cada fragmento que lo atraviesa se lleva algo — un poco de peso, un poco de forma, un poco de lo que aún quedaba de contorno. Y él sigue adelante, más ligero, menos definido, menos él en el sentido en que alguna vez se entendió a sí mismo.</p>
+              <p>No hay miedo. No hay resistencia. Solo el movimiento constante a través de un campo de piedras que lo van deshaciendo pieza a pieza, con la indiferencia absoluta del universo.</p>
+              <p>Lo que queda sigue cayendo. Lo que se queda atrás ya no recuerda haber sido parte de algo.</p>
+              <span class="song-closing">— No es el impacto lo que transforma. Es todo lo que se deja por el camino.</span>`,
+    body_en: `<p>The void has obstacles. Void Passenger finds them without looking — masses of rock floating without purpose, fragments of something that may once have been a world. He grazes them. He passes through them. Some impact and he waits for the pain, but the pain does not come. Only a strange sensation, as if something of him adheres to each passing stone.</p>
+              <p>This is not destruction. It is dispersal.</p>
+              <p>He is ceasing to be matter and he does not experience it as loss but as process. Each fragment that passes through him takes something — a little weight, a little form, a little of what remained of his outline. And he moves forward, lighter, less defined, less himself in the way he once understood himself to be.</p>
+              <p>No fear. No resistance. Only the constant movement through a field of stones that unmake him piece by piece, with the absolute indifference of the universe.</p>
+              <p>What remains keeps falling. What stays behind no longer remembers having been part of something.</p>
+              <span class="song-closing">— It is not the impact that transforms. It is everything left along the way.</span>`
+  },
+  {
+    id: 5, num: "V",
+    title_es: "Dissolving Through Fingers", title_en: "Dissolving Through Fingers",
+    body_es: `<p>Ya casi no queda forma. Void Passenger siente los últimos bordes de lo que fue disolviéndose, no con violencia sino con la suavidad de algo que siempre estuvo destinado a soltarse.</p>
+              <p>No tiene rostro. No tiene nombre. Lo poco que aún podría llamarse cuerpo se dispersa como aire entre los dedos de algo mucho más grande que él.</p>
+              <p>Hay resistencia. Poca, pero la hay. Un instinto antiguo que dice todavía, que dice espera, que dice aún no. Pero al mismo tiempo hay una voz — la misma que lo llamaba desde lejos en Transmission Collapse, la misma que siempre estuvo ahí — que le dice lo contrario. Que se rinda. Que lo que viene al otro lado del soltar no es el fin sino algo que no tiene nombre porque ningún lenguaje ha necesitado nombrarlo todavía.</p>
+              <p>Y entonces lo siente. Calor. No el calor del fuego sino el de algo que reconoce. Pertenencia. Como si este lugar al que está llegando fuera el único lugar al que siempre perteneció y simplemente había olvidado el camino de vuelta.</p>
+              <p>No sabe si esto es muerte. No sabe si es vida. Solo sabe que la luz lo llama y que por primera vez en todo este viaje, rendirse se siente bien.</p>
+              <p>Se disuelve. Sin miedo. Sin dolor. Sin resistencia. Como siempre debió ser.</p>
+              <span class="song-closing">— No desaparece. Se convierte en todo lo demás.</span>`,
+    body_en: `<p>There is almost no form left. Void Passenger feels the last edges of what he was dissolving, not with violence but with the softness of something that was always meant to let go.</p>
+              <p>He has no face. No name. The little that could still be called a body disperses like air through the fingers of something far greater than him.</p>
+              <p>There is resistance. Little, but it is there. An ancient instinct that says still, that says wait, that says not yet. But at the same time there is a voice — the same one that called to him from afar in Transmission Collapse, the same one that was always there — saying the opposite. To surrender. That what lies on the other side of letting go is not the end but something that has no name because no language has ever needed to name it.</p>
+              <p>And then he feels it. Warmth. Not the warmth of fire but of something he recognizes. Belonging. As if this place he is arriving at were the only place he always belonged and he had simply forgotten the way back.</p>
+              <p>He does not know if this is death. He does not know if this is life. He only knows that the light calls to him and that for the first time in this entire journey, surrendering feels right.</p>
+              <p>He dissolves. Without fear. Without pain. Without resistance. As it was always meant to be.</p>
+              <span class="song-closing">— He does not disappear. He becomes everything else.</span>`
+  }
+];
+
+/* ============ Render songs ============ */
+const songsRoot = document.getElementById("songs");
+SONGS.forEach(s => {
+  const el = document.createElement("article");
+  el.className = "song";
+  el.dataset.songId = s.id;
+  el.innerHTML = `
+    <div class="song-side">
+      <canvas></canvas>
+      <div class="song-num">${s.num}</div>
+    </div>
+    <div class="song-content">
+      <h3 data-title-es="${s.title_es}" data-title-en="${s.title_en}">${s.title_es}</h3>
+      <div class="song-body" data-body-es='${encodeURIComponent(s.body_es)}' data-body-en='${encodeURIComponent(s.body_en)}'>${s.body_es}</div>
+    </div>
+  `;
+  songsRoot.appendChild(el);
+});
+
+/* ============ Language toggle ============ */
+let currentLang = "es";
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (I18N[lang][key] != null) el.textContent = I18N[lang][key];
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => {
+    const key = el.getAttribute("data-i18n-html");
+    if (I18N[lang][key] != null) el.innerHTML = I18N[lang][key];
+  });
+  document.querySelectorAll(".song h3").forEach(h => {
+    h.textContent = h.getAttribute(`data-title-${lang}`);
+  });
+  document.querySelectorAll(".song-body").forEach(b => {
+    b.innerHTML = decodeURIComponent(b.getAttribute(`data-body-${lang}`));
+  });
+  document.querySelectorAll(".lang-toggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.lang === lang);
+  });
+}
+document.querySelectorAll(".lang-toggle button").forEach(btn => {
+  btn.addEventListener("click", () => setLang(btn.dataset.lang));
+});
+
+/* ============ Song-side particle canvases (gold dust → cluster on hover) ============ */
+document.querySelectorAll(".song").forEach(songEl => {
+  const canvas = songEl.querySelector("canvas");
+  const numEl = songEl.querySelector(".song-num");
+  const ctx = canvas.getContext("2d");
+  let W, H, dpr;
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    W = rect.width; H = rect.height;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  new ResizeObserver(resize).observe(canvas);
+
+  const particles = Array.from({length: 22}, () => ({
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    bx: Math.random() * 100,
+    by: Math.random() * 100,
+    r: 0.6 + Math.random() * 1.4,
+    sp: 0.2 + Math.random() * 0.4,
+    a: 0.3 + Math.random() * 0.5,
+    phase: Math.random() * Math.PI * 2
+  }));
+
+  let hover = false;
+  songEl.addEventListener("mouseenter", () => hover = true);
+  songEl.addEventListener("mouseleave", () => hover = false);
+
+  function loop(t) {
+    if (!canvas.isConnected) return;
+    ctx.clearRect(0, 0, W, H);
+    // recompute base pos in canvas coords
+    const cx = W / 2, cy = H / 2;
+    particles.forEach(p => {
+      // free float baseline
+      const driftX = p.bx + Math.sin(t * 0.0006 + p.phase) * 8;
+      const driftY = p.by + Math.cos(t * 0.0005 + p.phase * 1.3) * 8;
+      // target: free (driftX, driftY) or cluster center (cx, cy)
+      const tx = hover ? cx : (driftX / 100) * W;
+      const ty = hover ? cy : (driftY / 100) * H;
+      // ease
+      p.x += (tx - p.x) * (hover ? 0.08 : 0.03);
+      p.y += (ty - p.y) * (hover ? 0.08 : 0.03);
+
+      const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+      glow.addColorStop(0, `rgba(212, 184, 112, ${p.a * (hover ? 1 : 0.7)})`);
+      glow.addColorStop(0.5, `rgba(196, 160, 90, ${p.a * 0.3})`);
+      glow.addColorStop(1, `rgba(196, 160, 90, 0)`);
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = `rgba(224, 208, 176, ${p.a})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+});
+
+/* ============ Cosmos canvas: stars + free gold dust ============ */
+(() => {
+  const canvas = document.getElementById("cosmos");
+  const ctx = canvas.getContext("2d");
+  let W, H, dpr;
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  // stars (twinkling)
+  const STAR_COUNT = Math.min(260, Math.floor((W * H) / 6000));
+  const stars = Array.from({length: STAR_COUNT}, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.2 + 0.2,
+    baseA: 0.3 + Math.random() * 0.7,
+    phase: Math.random() * Math.PI * 2,
+    speed: 0.0008 + Math.random() * 0.0022
+  }));
+
+  // gold dust particles (free floating, parallax with scroll)
+  const DUST_COUNT = 70;
+  const dust = Array.from({length: DUST_COUNT}, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.15,
+    vy: (Math.random() - 0.5) * 0.15 - 0.05,
+    r: 0.5 + Math.random() * 1.6,
+    a: 0.2 + Math.random() * 0.5,
+    phase: Math.random() * Math.PI * 2,
+    flick: 0.4 + Math.random() * 0.6
+  }));
+
+  let scrollY = window.scrollY;
+  window.addEventListener("scroll", () => { scrollY = window.scrollY; }, { passive: true });
+
+  function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+
+    // soft purple wash deep field
+    const wash = ctx.createRadialGradient(W * 0.7, H * 0.25, 0, W * 0.7, H * 0.25, Math.max(W, H) * 0.8);
+    wash.addColorStop(0, "rgba(60, 20, 120, 0.10)");
+    wash.addColorStop(0.4, "rgba(30, 10, 70, 0.05)");
+    wash.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = wash;
+    ctx.fillRect(0, 0, W, H);
+
+    // stars
+    for (const s of stars) {
+      const tw = (Math.sin(t * s.speed + s.phase) + 1) / 2;
+      const a = s.baseA * (0.4 + tw * 0.6);
+      ctx.fillStyle = `rgba(230, 220, 200, ${a})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      if (s.r > 0.9 && tw > 0.7) {
+        ctx.fillStyle = `rgba(212, 184, 112, ${a * 0.4})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // gold dust
+    for (const p of dust) {
+      p.x += p.vx;
+      p.y += p.vy + Math.sin(t * 0.0008 + p.phase) * 0.05;
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H + 10) p.y = -10;
+      const flick = 0.5 + Math.sin(t * 0.002 * p.flick + p.phase) * 0.5;
+      const a = p.a * (0.5 + flick * 0.5);
+      const yScreen = p.y - scrollY * 0.05; // subtle parallax
+      const g = ctx.createRadialGradient(p.x, yScreen, 0, p.x, yScreen, p.r * 6);
+      g.addColorStop(0, `rgba(212, 184, 112, ${a * 0.9})`);
+      g.addColorStop(0.4, `rgba(196, 160, 90, ${a * 0.25})`);
+      g.addColorStop(1, `rgba(196, 160, 90, 0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(p.x, yScreen, p.r * 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = `rgba(224, 208, 176, ${a})`;
+      ctx.beginPath();
+      ctx.arc(p.x, yScreen, p.r * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ============ Drifting planets across viewport ============ */
+(() => {
+  const p1 = document.getElementById("planet-1");
+  const p2 = document.getElementById("planet-2");
+
+  // Planet 1: left → right, upper third
+  // Planet 2: right → left, lower third
+  // Slow, linear, full traverse.
+  const PERIOD_1 = 240; // seconds for full cross — very slow, calm
+  const PERIOD_2 = 320;
+
+  function drift(el, period, direction, yPct) {
+    const size = el.offsetWidth;
+    const start = -size - 40;
+    let last = performance.now();
+    const W = () => window.innerWidth;
+    const totalDist = () => W() + size * 2 + 80;
+    let elapsed = Math.random() * period * 1000;
+    function step(now) {
+      const dt = now - last;
+      last = now;
+      elapsed += dt;
+      const cycle = (elapsed / 1000) % period;
+      const frac = cycle / period;
+      const x = direction === 1
+        ? start + frac * totalDist()
+        : (W() + size + 40) - frac * totalDist();
+      el.style.transform = `translate3d(${x}px, 0, 0)`;
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  drift(p1, PERIOD_1, 1);
+  drift(p2, PERIOD_2, -1);
+})();
+
+</script>
+</body>
+</html>
