@@ -510,6 +510,53 @@
     section { padding: 90px 20px; }
     .hero { padding: 130px 20px 60px; }
   }
+
+  /* COOKIE BANNER */
+  #cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(4,2,10,0.97);
+    border-top: 1px solid rgba(196,160,90,0.2);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    z-index: 9999;
+    flex-wrap: wrap;
+  }
+  #cookie-banner p {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: rgba(196,160,90,0.6);
+    margin: 0;
+    flex: 1;
+  }
+  #cookie-banner a {
+    color: rgba(196,160,90,0.8);
+    text-decoration: underline;
+  }
+  #cookie-accept {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.5rem 1.5rem;
+    border: 1px solid rgba(196,160,90,0.4);
+    background: transparent;
+    color: rgba(196,160,90,0.8);
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+  #cookie-accept:hover {
+    background: rgba(196,160,90,0.15);
+    color: var(--gold-bright);
+  }
+
 </style>
 </head>
 <body>
@@ -1027,5 +1074,17 @@ document.querySelectorAll(".song").forEach(songEl => {
 })();
 
 </script>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <p>This site uses third-party services (Google Fonts, Bandcamp) that may use cookies or collect anonymous data. By continuing to browse you accept this use. &nbsp;·&nbsp; Esta web utiliza servicios de terceros (Google Fonts, Bandcamp) que pueden usar cookies o recopilar datos anónimos. Al continuar navegando aceptas su uso.</p>
+  <button id="cookie-accept" onclick="document.getElementById('cookie-banner').style.display='none';localStorage.setItem('cookies','accepted')">Accept / Aceptar</button>
+</div>
+<script>
+  if(localStorage.getItem('cookies')==='accepted'){
+    document.getElementById('cookie-banner').style.display='none';
+  }
+</script>
+
 </body>
 </html>
